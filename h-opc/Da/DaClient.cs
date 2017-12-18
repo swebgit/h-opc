@@ -137,6 +137,35 @@ namespace Hylasoft.Opc.Da
 
       return readEvent;
     }
+    
+    /// <summary>
+    /// Reads multiple tags. The order of the return values corresponds to the order of the tag list that
+    /// was passed into the method.
+    /// </summary>
+    /// <param name="tags">List of fully-qualified tag identifiers. You can specify a subfolder by using a comma delimited name.
+    /// E.g: the tag `foo.bar` reads the tag `bar` on the folder `foo`</param>
+    /// <returns>The values retrieved from the OPC.</returns>
+    public ReadEvent<object>[] ReadGroup(string[] tags)
+    {
+      var items = tags.Select(t => new OpcDa.Item { ItemName = t }).ToArray();
+      if (Status == OpcStatus.NotConnected)
+      {
+          throw new OpcException("Server not connected. Cannot read tag.");
+      }
+      var readEvents = new ReadEvent<object>[tags.Length];
+      var results = _server.Read(items);
+      for (var i = 0; i < tags.Length; i++)
+      {
+        readEvents[i] = new ReadEvent<object>
+        {
+          Value = results[i].Value,
+          SourceTimestamp = results[i].Timestamp,
+          ServerTimestamp = results[i].Timestamp,
+          Quality = results[i].Quality == OpcDa.Quality.Good ? Quality.Good : Quality.Bad
+        };
+      }
+      return readEvents;
+    }
 
     /// <summary>
     /// Write a value on the specified opc tag
