@@ -184,6 +184,20 @@ namespace Hylasoft.Opc.Da
       var result = _server.Write(new[] { itmVal })[0];
       CheckResult(result, tag);
     }
+    
+    /// <summary>
+    /// Write values to multiple OPC tags
+    /// </summary>
+    /// <param name="tagsToWrite">The tag/value pairs to write to the OPC server</param>
+    public void WriteGroup(OpcTag[] tagsToWrite)
+    {
+      var itemValues = tagsToWrite.Select(t => new OpcDa.ItemValue { ItemName = t.Tag, Value = t.Value }).ToArray();
+      var results = _server.Write(itemValues);
+      for (var i = 0; i < results.Length; i++)
+      {
+        CheckResult(results[i], tagsToWrite[i].Tag);
+      }
+    }
 
     /// <summary>
     /// Casts result of monitoring and reading values
