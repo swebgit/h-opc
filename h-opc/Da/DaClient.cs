@@ -186,7 +186,7 @@ namespace Hylasoft.Opc.Da
     }
     
     /// <summary>
-    /// Write values to multiple OPC tags
+    /// Write values to multiple OPC tags.
     /// </summary>
     /// <param name="tagsToWrite">The tag/value pairs to write to the OPC server</param>
     public void WriteGroup(OpcTag[] tagsToWrite)
